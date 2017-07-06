@@ -36,6 +36,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,9 +128,17 @@ public class YamlDataSource implements DataSource<Page>
 	 */
 	private void pageParse(Map fieldMap, Page targetPage)
 	{
-		Class<? extends Page> targetPageCls = targetPage.getClass();
-		Field[] decFields = targetPageCls.getDeclaredFields();
-		for(Field field : decFields)
+		Class<?> targetPageCls = targetPage.getClass();
+		List<Field> fieldList = new ArrayList<Field>();
+		
+		for(; targetPageCls != Page.class; targetPageCls = targetPageCls.getSuperclass())
+		{
+			Field[] decFields = targetPageCls.getDeclaredFields();
+			
+			fieldList.addAll(Arrays.asList(decFields));
+		}
+		
+		for(Field field : fieldList)
 		{
 			String name = field.getName();
 			Object data = fieldMap.get(name);
