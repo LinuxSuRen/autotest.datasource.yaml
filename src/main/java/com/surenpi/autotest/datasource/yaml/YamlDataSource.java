@@ -21,7 +21,10 @@ package com.surenpi.autotest.datasource.yaml;
 import com.surenpi.autotest.datasource.DataResource;
 import com.surenpi.autotest.datasource.DataSource;
 import com.surenpi.autotest.datasource.DataSourceConstants;
+import com.surenpi.autotest.datasource.DynamicData;
 import com.surenpi.autotest.webui.Page;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -33,6 +36,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,34 +49,16 @@ import java.util.Map;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class YamlDataSource implements DataSource<Page>
 {
+	@Autowired
+	private List<DynamicData> dynamicDataList;
+	
 	private URL url;
-
-	@Override
-	public void setGlobalMap(Map<String, Object> globalMap)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Map<String, Object> getGlobalMap()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getName()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+	private Map<String, Object> globalMap = new HashMap<String, Object>();
 
 	@Override
 	public boolean loadData(DataResource resource, Page page)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return loadData(resource, 0, page);
 	}
 
 	@Override
@@ -146,20 +133,23 @@ public class YamlDataSource implements DataSource<Page>
 			String name = field.getName();
 			Object data = fieldMap.get(name);
 			
-			
 			try
 			{
-				try
-				{
-					setValue(field, targetPage, data);
-				}
-				catch (NoSuchMethodException | SecurityException
-						| InvocationTargetException e)
-				{
-					e.printStackTrace();
-				}
+				setValue(field, targetPage, data);
 			}
 			catch (IllegalArgumentException | IllegalAccessException e)
+			{
+				e.printStackTrace();
+			}
+			catch (NoSuchMethodException e)
+			{
+				e.printStackTrace();
+			}
+			catch (SecurityException e)
+			{
+				e.printStackTrace();
+			}
+			catch (InvocationTargetException e)
 			{
 				e.printStackTrace();
 			}
@@ -192,8 +182,80 @@ public class YamlDataSource implements DataSource<Page>
 		}
 		
 		Method method = fieldObj.getClass().getMethod("setValue", String.class);
+		String dataText = null;
 		
-		method.invoke(fieldObj, data.toString());
+		if(data instanceof Map && ((Map) data).containsKey("data"))
+		{
+			dataText = getDataFromMap((Map) data);
+		}
+		else if(data instanceof String)
+		{
+			dataText = data.toString();
+		}
+		else
+		{
+			throw new RuntimeException("Unknow data type : " + data.getClass());
+		}
+		
+		method.invoke(fieldObj, dataText);
+	}
+	
+	/**
+	 * @param data
+	 * @return
+	 */
+	private String getDataFromMap(Map data)
+	{
+		String dataText = data.get("data").toString();
+		
+		DynamicData dynamicData = null;
+		if(data.containsKey("type"))
+		{
+			dynamicData = getDynamicDataByType(data.get("type").toString());
+		}
+		
+		if(dynamicData != null)
+		{
+			dataText = dynamicData.getValue(dataText);
+		}
+		
+		return dataText;
+	}
+
+	/**
+	 * 根据类型获取对应的动态数据
+	 * @param type
+	 * @return
+	 */
+	private DynamicData getDynamicDataByType(String type)
+	{
+		for(DynamicData dynamicData : dynamicDataList)
+		{
+			if(dynamicData.getType().equals(type))
+			{
+				dynamicData.setData(globalMap);
+				return dynamicData;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public void setGlobalMap(Map<String, Object> globalMap)
+	{
+		this.globalMap = globalMap;
+	}
+
+	@Override
+	public Map<String, Object> getGlobalMap()
+	{
+		return globalMap;
+	}
+
+	@Override
+	public String getName()
+	{
+		return url.getFile();
 	}
 
 }
