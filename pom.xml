@@ -4,19 +4,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.surenpi.autotest</groupId>
+    <parent>
+        <groupId>com.surenpi.autotest</groupId>
+        <artifactId>autotest.parent</artifactId>
+        <version>1.0.1-20170815</version>
+    </parent>
+
     <artifactId>autotest.datasource.yaml</artifactId>
-    <version>1.0.0-20170706</version>
+    <version>1.0.1-SNAPSHOT</version>
+
+    <scm>
+        <connection>scm:git:git@github.com:LinuxSuRen/${project.artifactId}.git</connection>
+        <url>scm:git:git@github.com:LinuxSuRen/${project.artifactId}</url>
+        <developerConnection>scm:git:git@github.com:LinuxSuRen/${project.artifactId}.git</developerConnection>
+        <tag>${project.version}</tag>
+    </scm>
     
     <description>YAML格式的数据源</description>
     <name>autotest.datasource.yaml</name>
     <url>http://surenpi.com</url>
-
-    <parent>
-        <groupId>com.surenpi.autotest</groupId>
-        <artifactId>autotest.parent</artifactId>
-        <version>1.0.1-20170618</version>
-    </parent>
     
 	<build>
 		<plugins>

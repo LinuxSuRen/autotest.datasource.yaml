@@ -33,9 +33,9 @@
 //	public void load()
 //	{
 //		YamlDataSource yamlTest = new YamlDataSource();
-//		
+//
 //		Assert.assertNotNull(yamlTest);
-//		
+//
 //		//prepare
 //		DataResource resource = new ClasspathResource(YamlDataSourceTest.class,
 //				"dataSource/yaml/demo.yaml");
@@ -43,10 +43,10 @@
 //		DemoPage page = new DemoPage();
 //		page.setUserName(new Text());
 //		page.setPassword(new Text());
-//		
+//
 //		boolean loadResult = yamlTest.loadData(resource, row, page);
 //		Assert.assertTrue(loadResult);
-//		
+//
 //		Assert.assertNotNull(page.getUserName().getValue());
 //		Assert.assertNotNull(page.getPassword().getValue());
 //	}

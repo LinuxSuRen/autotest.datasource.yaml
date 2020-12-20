@@ -18,10 +18,7 @@
 
 package com.surenpi.autotest.datasource.yaml;
 
-import com.surenpi.autotest.datasource.DataResource;
-import com.surenpi.autotest.datasource.DataSource;
-import com.surenpi.autotest.datasource.DataSourceConstants;
-import com.surenpi.autotest.datasource.DynamicData;
+import com.surenpi.autotest.datasource.*;
 import com.surenpi.autotest.webui.Page;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +46,7 @@ import java.util.Map;
  */
 @Component(DataSourceConstants.DS_TYPE_YAML)
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class YamlDataSource implements DataSource<Page>
+public class YamlDataSource implements DataSource<Page>, DynamicDataSource
 {
 	@Autowired
 	private List<DynamicData> dynamicDataList;
