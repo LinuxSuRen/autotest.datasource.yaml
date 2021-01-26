@@ -201,7 +201,7 @@ public class YamlDataSource implements DataSource<Page>, DynamicDataSource
 		}
 		else
 		{
-			throw new RuntimeException("Unknow data type : " + data.getClass());
+			throw new RuntimeException("Unknown data type : " + data.getClass());
 		}
 		
 		method.invoke(fieldObj, dataText);
